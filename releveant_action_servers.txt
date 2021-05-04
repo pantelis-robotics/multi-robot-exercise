@@ -1,0 +1,291 @@
+==================================
+==================================
+>>> ros2 action list -t
+/robot1/FollowTargets [amazon_robot_msg/action/FollowTargets]
+/robot1/backup [nav2_msgs/action/BackUp]
+/robot1/compute_path_to_pose [nav2_msgs/action/ComputePathToPose]
+/robot1/follow_path [nav2_msgs/action/FollowPath]
+/robot1/navigate_to_pose [nav2_msgs/action/NavigateToPose]
+/robot1/spin [nav2_msgs/action/Spin]
+/robot1/wait [nav2_msgs/action/Wait]
+/robot2/FollowTargets [amazon_robot_msg/action/FollowTargets]
+/robot2/backup [nav2_msgs/action/BackUp]
+/robot2/compute_path_to_pose [nav2_msgs/action/ComputePathToPose]
+/robot2/follow_path [nav2_msgs/action/FollowPath]
+/robot2/navigate_to_pose [nav2_msgs/action/NavigateToPose]
+/robot2/spin [nav2_msgs/action/Spin]
+/robot2/wait [nav2_msgs/action/Wait]
+
+
+==================================
+==================================
+>>> ros2 action info /robot1/FollowTargets
+Action: /robot1/FollowTargets
+Action clients: 4
+    //r/o/b/o/t/1rviz2
+    //r/o/b/o/t/1rviz2
+    //r/o/b/o/t/1rviz2
+    //r/o/b/o/t/1rviz2
+Action servers: 2
+    //r/o/b/o/t/1robot_controller
+    //r/o/b/o/t/1robot_controller
+>>> ros2 interface show amazon_robot_msg/action/FollowTargets
+#goal definition
+# LoadPosePair[] loadposepair
+int32[] load
+geometry_msgs/PoseStamped[] poses
+	std_msgs/Header header
+		builtin_interfaces/Time stamp
+			int32 sec
+			uint32 nanosec
+		string frame_id
+	Pose pose
+		Point position
+			float64 x
+			float64 y
+			float64 z
+		Quaternion orientation
+			float64 x 0
+			float64 y 0
+			float64 z 0
+			float64 w 1
+---
+#result definition
+int32[] missed_waypoints
+---
+#feedback
+uint32 current_waypoint
+
+
+==================================
+==================================
+>>> ros2 action info /robot1/backup
+Action: /robot1/backup
+Action clients: 0
+Action servers: 1
+    //r/o/b/o/t/1recoveries_server
+>>> ros2 interface show nav2_msgs/action/BackUp
+#goal definition
+geometry_msgs/Point target
+	float64 x
+	float64 y
+	float64 z
+float32 speed
+---
+#result definition
+builtin_interfaces/Duration total_elapsed_time
+	int32 sec
+	uint32 nanosec
+---
+float32 distance_traveled
+
+
+==================================
+==================================
+>>> ros2 action info /robot1/compute_path_to_pose
+Action: /robot1/compute_path_to_pose
+Action clients: 1
+    //r/o/b/o/t/1bt_navigator_rclcpp_node
+Action servers: 1
+    //r/o/b/o/t/1planner_server_rclcpp_node
+>>> ros2 interface show nav2_msgs/action/ComputePathToPose
+#goal definition
+geometry_msgs/PoseStamped pose
+	std_msgs/Header header
+		builtin_interfaces/Time stamp
+			int32 sec
+			uint32 nanosec
+		string frame_id
+	Pose pose
+		Point position
+			float64 x
+			float64 y
+			float64 z
+		Quaternion orientation
+			float64 x 0
+			float64 y 0
+			float64 z 0
+			float64 w 1
+string planner_id
+---
+#result definition
+nav_msgs/Path path
+	std_msgs/Header header
+		builtin_interfaces/Time stamp
+			int32 sec
+			uint32 nanosec
+		string frame_id
+	geometry_msgs/PoseStamped[] poses
+		std_msgs/Header header
+			builtin_interfaces/Time stamp
+				int32 sec
+				uint32 nanosec
+			string frame_id
+		Pose pose
+			Point position
+				float64 x
+				float64 y
+				float64 z
+			Quaternion orientation
+				float64 x 0
+				float64 y 0
+				float64 z 0
+				float64 w 1
+builtin_interfaces/Duration planning_time
+	int32 sec
+	uint32 nanosec
+---
+#feedback
+
+==================================
+==================================
+>>> ros2 action info /robot1/follow_path
+Action: /robot1/follow_path
+Action clients: 1
+    //r/o/b/o/t/1bt_navigator_rclcpp_node
+Action servers: 1
+    //r/o/b/o/t/1controller_server_rclcpp_node
+>>> ros2 interface show nav2_msgs/action/FollowPath
+#goal definition
+nav_msgs/Path path
+	std_msgs/Header header
+		builtin_interfaces/Time stamp
+			int32 sec
+			uint32 nanosec
+		string frame_id
+	geometry_msgs/PoseStamped[] poses
+		std_msgs/Header header
+			builtin_interfaces/Time stamp
+				int32 sec
+				uint32 nanosec
+			string frame_id
+		Pose pose
+			Point position
+				float64 x
+				float64 y
+				float64 z
+			Quaternion orientation
+				float64 x 0
+				float64 y 0
+				float64 z 0
+				float64 w 1
+string controller_id
+---
+#result definition
+std_msgs/Empty result
+---
+#feedback
+float32 distance_to_goal
+float32 speed
+
+
+==================================
+==================================
+>>> ros2 action info /robot1/navigate_to_pose
+Action: /robot1/navigate_to_pose
+Action clients: 6
+    //r/o/b/o/t/1rviz2
+    //r/o/b/o/t/1rviz2
+    //r/o/b/o/t/1rviz2
+    //r/o/b/o/t/1rviz2
+    //r/o/b/o/t/1bt_navigator_rclcpp_node
+    //r/o/b/o/t/1robot_controller_rclcpp_node
+Action servers: 1
+    //r/o/b/o/t/1bt_navigator
+>>> ros2 interface show nav2_msgs/action/NavigateToPose
+#goal definition
+geometry_msgs/PoseStamped pose
+	std_msgs/Header header
+		builtin_interfaces/Time stamp
+			int32 sec
+			uint32 nanosec
+		string frame_id
+	Pose pose
+		Point position
+			float64 x
+			float64 y
+			float64 z
+		Quaternion orientation
+			float64 x 0
+			float64 y 0
+			float64 z 0
+			float64 w 1
+string behavior_tree
+---
+#result definition
+std_msgs/Empty result
+---
+geometry_msgs/PoseStamped current_pose
+	std_msgs/Header header
+		builtin_interfaces/Time stamp
+			int32 sec
+			uint32 nanosec
+		string frame_id
+	Pose pose
+		Point position
+			float64 x
+			float64 y
+			float64 z
+		Quaternion orientation
+			float64 x 0
+			float64 y 0
+			float64 z 0
+			float64 w 1
+builtin_interfaces/Duration navigation_time
+	int32 sec
+	uint32 nanosec
+int16 number_of_recoveries
+float32 distance_remaining
+
+
+==================================
+==================================
+>>> ros2 action info /robot1/spin
+Action: /robot1/spin
+Action clients: 1
+    //r/o/b/o/t/1bt_navigator_rclcpp_node
+Action servers: 1
+    //r/o/b/o/t/1recoveries_server
+
+#goal definition
+float32 target_yaw
+---
+#result definition
+builtin_interfaces/Duration total_elapsed_time
+	int32 sec
+	uint32 nanosec
+---
+float32 angular_distance_traveled
+
+
+==================================
+==================================
+>>> ros2 action info /robot1/wait
+Action: /robot1/wait
+Action clients: 1
+    //r/o/b/o/t/1bt_navigator_rclcpp_node
+Action servers: 1
+    //r/o/b/o/t/1recoveries_server
+>>> ros2 interface show nav2_msgs/action/Wait
+#goal definition
+builtin_interfaces/Duration time
+	int32 sec
+	uint32 nanosec
+---
+#result definition
+builtin_interfaces/Duration total_elapsed_time
+	int32 sec
+	uint32 nanosec
+---
+#feedback
+builtin_interfaces/Duration time_left
+	int32 sec
+	uint32 nanosec
+
+
+==================================
+==================================
+
+
+
+
