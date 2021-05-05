@@ -3,7 +3,6 @@ from rclpy.node import Node
 from rclpy.action import ActionClient
 from amazon_robot_msg.action import FollowTargets
 from geometry_msgs.msg import PoseStamped
-
 '''
 JdeMultirobot 
 
@@ -93,47 +92,52 @@ pallets = {
 # GwtPoseStamped does accept quaternions for rotation, but you have to uncomment them, and I have no idea how to use them. 
 # We could use the spin action if we can figure out how to get the robot to do non-pose, non-lift actions 
 
-    'pallet_1_0': {'x_pose': 3.628, 'y_pose': 0.379, 'z_pose': 0.01}, #, want 'yaw' to be like 1.57 but this takes 
-    'pallet_1': {'x_pose': 3.628, 'y_pose': 0.679, 'z_pose': 0.01},  
-    'pallet_2_0': {'x_pose': 3.628, 'y_pose': -1.543, 'z_pose': 0.01},
-    'pallet_2': {'x_pose': 3.628, 'y_pose': -1.343, 'z_pose': 0.01},
-    'pallet_3_0': {'x_pose': 3.628, 'y_pose': -3.339, 'z_pose': 0.01},
-    'pallet_3': {'x_pose': 3.628, 'y_pose': -3.139, 'z_pose': 0.01},
-    'pallet_4_0': {'x_pose': 3.628, 'y_pose': -4.527, 'z_pose': 0.01},
-    'pallet_4': {'x_pose': 3.628, 'y_pose': -4.927, 'z_pose': 0.01},
-    'pallet_5_0': {'x_pose': 3.628, 'y_pose': -6.451, 'z_pose': 0.01},
-    'pallet_5': {'x_pose': 3.628, 'y_pose': -6.851, 'z_pose': 0.01},
-    'pallet_6_0': {'x_pose': 3.628, 'y_pose': -8.365, 'z_pose': 0.01},
-    'pallet_6': {'x_pose': 3.628, 'y_pose': -8.765, 'z_pose': 0.01},
+    'pallet_1': {'x_pose': 3.628, 'y_pose': 0.679, 'z_pose': 0.01, 'yaw_angle': 90},  
+    'pallet_2': {'x_pose': 3.628, 'y_pose': -1.343, 'z_pose': 0.01, 'yaw_angle': 90},
+    'pallet_3': {'x_pose': 3.628, 'y_pose': -3.139, 'z_pose': 0.01, 'yaw_angle': 90},
+    'pallet_4': {'x_pose': 3.628, 'y_pose': -4.927, 'z_pose': 0.01, 'yaw_angle': 270},
+    'pallet_5': {'x_pose': 3.628, 'y_pose': -6.851, 'z_pose': 0.01, 'yaw_angle': 270},
+    'pallet_6': {'x_pose': 3.628, 'y_pose': -8.765, 'z_pose': 0.01, 'yaw_angle': 270},
 }
 
-storage_locations = {
-    'storage_location_1': {'x_pose': -5.84, 'y_pose': -3.35, 'z_pose': 0.01},
-    'storage_location_2': {'x_pose': -5.84, 'y_pose': 1.12, 'z_pose': 0.01},
-    'storage_location_3': {'x_pose': -5.84, 'y_pose': -7.76, 'z_pose': 0.01},
+storage_locations =  {
+    'storage_location_1': {'x_pose': -5.84, 'y_pose': -3.35, 'z_pose': 0.01, 'yaw_angle': 0},
+    'storage_location_2': {'x_pose': -5.84, 'y_pose': 1.12, 'z_pose': 0.01, 'yaw_angle': 0},
+    'storage_location_3': {'x_pose': -5.84, 'y_pose': -7.76, 'z_pose': 0.01, 'yaw_angle': 0},
 }
 
 
-free_area = {
-    'right_end_of_corridor': {'x_pose': 1.35, 'y_pose': -6.78, 'z_pose': 0.01},
-    'left_end_of_corridor': {'x_pose': 0.92, 'y_pose': 6.45, 'z_pose': 0.01},
-    
+free_area =  {
+    'right_end_of_corridor': {'x_pose': 1.35, 'y_pose': -6.78, 'z_pose': 0.01, 'yaw_angle': 90 },
+    'left_end_of_corridor': {'x_pose': 0.92, 'y_pose': 6.45, 'z_pose': 0.01, 'yaw_angle': 270 },
+    'center_of_corridor': {'x_pose': 0.5, 'y_pose': 1.5, 'z_pose': 0.01, 'yaw_angle': 270 },
+    'center_right_of_corridor': {'x_pose': 0.5, 'y_pose': -5, 'z_pose': 0.01, 'yaw_angle': 270 },
 }
 
 lift_stages = {'load': 2, 'unload': -2, 'half_load': 1, 'half_unload': -1, 'unchanged': 0}
 
+quaternion_from_ccw_angle = {'0' : [0.000, 0.000, 0.000, 1.0],
+                             '45': [0.000, 0.000, 0.383, 0.924],
+                             '90': [0.000, 0.000, 0.707, 0.707],
+                            '135': [0.000, 0.000, 0.924, 0.383],
+                            '180': [0.000, 0.000, 1.000, 0.000],
+                             '225': [0.000, 0.000, 0.924, -0.383],
+                             '270': [0.000, 0.000, -0.707, 0.707],
+                             '315': [0.000, 0.000, -0.383, 0.924]
+                             }
 
-def get_pose_stamped(x_pose, y_pose, z_pose):
+def get_pose_stamped(x_pose, y_pose, z_pose, yaw_angle):
     pose_stamped = PoseStamped()
     pose_stamped.pose.position.x = x_pose
     pose_stamped.pose.position.y = y_pose
     pose_stamped.pose.position.z = z_pose
     
-    # Quaternion orientations: (no idea if these correspond to actual rotation about the axis)
-    #pose_stamped.pose.orientation.x = x_rot
-    #pose_stamped.pose.orientation.y = y_rot
-    #pose_stamped.pose.orientation.z = z_rot
-    #pose_stamped.pose.orientation.w = w_rot
+##    # Quaternion orientations: (no idea if these correspond to actual rotation about the axis)
+    quaternion = quaternion_from_ccw_angle[str(int(yaw_angle))]
+    pose_stamped.pose.orientation.x = quaternion[0]
+    pose_stamped.pose.orientation.y = quaternion[1]
+    pose_stamped.pose.orientation.z = quaternion[2]
+    pose_stamped.pose.orientation.w = quaternion[3]
     return pose_stamped
 
 
@@ -149,35 +153,58 @@ class WarehouseController:
         pass
 
     def create_test_plan(self):
-        poses_robot1 = [get_pose_stamped(**pallets['pallet_1_0']),
+        poses_robot1 = [
                         get_pose_stamped(**pallets['pallet_1']),
+                        get_pose_stamped(**free_area['center_of_corridor']),
+                        get_pose_stamped(**storage_locations['storage_location_1']),
+                        
+                        get_pose_stamped(**free_area['center_of_corridor']),
+                        get_pose_stamped(**pallets['pallet_2']),
+                        get_pose_stamped(**free_area['center_of_corridor']),
                         get_pose_stamped(**storage_locations['storage_location_2']),
-                        get_pose_stamped(**pallets['pallet_3_0']),
+
+                        get_pose_stamped(**free_area['center_of_corridor']),
                         get_pose_stamped(**pallets['pallet_3']),
-                        get_pose_stamped(**storage_locations['storage_location_2']),
-                        get_pose_stamped(**pallets['pallet_5_0']),
-                        get_pose_stamped(**pallets['pallet_5']),
+                        get_pose_stamped(**free_area['center_of_corridor']),
                         get_pose_stamped(**storage_locations['storage_location_2'])
                         ]
+        loads_robot1 = [lift_stages['load'],
+                        lift_stages['unchanged'], lift_stages['unload'],
 
-        loads_robot1 = [lift_stages['unchanged'], lift_stages['load'], lift_stages['unload'],
-                        lift_stages['unchanged'], lift_stages['load'], lift_stages['unload'],
-                        lift_stages['unchanged'], lift_stages['load'], lift_stages['unload']]
-        poses_robot2 = [get_pose_stamped(**free_area['right_end_of_corridor']),
-                        get_pose_stamped(**pallets['pallet_2_0']),
-                        get_pose_stamped(**pallets['pallet_2']),
-                        get_pose_stamped(**storage_locations['storage_location_1']),
-                        get_pose_stamped(**pallets['pallet_4_0']),
-                        get_pose_stamped(**pallets['pallet_4']),
-                        get_pose_stamped(**storage_locations['storage_location_3']),
-                        get_pose_stamped(**pallets['pallet_6_0']),
-                        get_pose_stamped(**pallets['pallet_6']),
-                        get_pose_stamped(**storage_locations['storage_location_3'])]
+                        lift_stages['unchanged'], lift_stages['load'],
+                        lift_stages['unchanged'], lift_stages['unload'],
+
+                        lift_stages['unchanged'], lift_stages['load'],
+                        lift_stages['unchanged'], lift_stages['unload'],
+                        ]
+
                         
-        loads_robot2 = [lift_stages['unchanged'], lift_stages['unchanged'], lift_stages['load'], lift_stages['unload'],
-                        lift_stages['unchanged'], lift_stages['load'], lift_stages['unload'],
-                        lift_stages['unchanged'], lift_stages['load'], lift_stages['unload']]
-        
+        poses_robot2 = [get_pose_stamped(**free_area['right_end_of_corridor']),
+                        get_pose_stamped(**pallets['pallet_6']),
+                        get_pose_stamped(**free_area['center_right_of_corridor']),
+                        get_pose_stamped(**storage_locations['storage_location_3']),
+
+                        get_pose_stamped(**free_area['center_right_of_corridor']),
+                        get_pose_stamped(**pallets['pallet_5']),
+                        get_pose_stamped(**free_area['center_right_of_corridor']),
+                        get_pose_stamped(**storage_locations['storage_location_3']),
+
+                        get_pose_stamped(**free_area['center_right_of_corridor']),
+                        get_pose_stamped(**pallets['pallet_4']),
+                        get_pose_stamped(**free_area['center_right_of_corridor']),
+                        get_pose_stamped(**storage_locations['storage_location_1'])
+
+                        ]
+    
+        loads_robot2 = [lift_stages['unchanged'], lift_stages['load'],
+                        lift_stages['unchanged'], lift_stages['unload'],
+
+                        lift_stages['unchanged'], lift_stages['load'],
+                        lift_stages['unchanged'], lift_stages['unload'],
+
+                        lift_stages['unchanged'], lift_stages['load'],
+                        lift_stages['unchanged'], lift_stages['unload'],  
+                        ]
         # print("Poses List ")
         # print(poses_robot1)
         # print("Load List ")
