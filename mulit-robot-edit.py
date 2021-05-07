@@ -111,7 +111,7 @@ free_area =  {
     'right_end_of_corridor': {'x_pose': 1.35, 'y_pose': -6.78, 'z_pose': 0.01, 'yaw_angle': 90 },
     'left_end_of_corridor': {'x_pose': 0.92, 'y_pose': 6.45, 'z_pose': 0.01, 'yaw_angle': 270 },
     'center_of_corridor': {'x_pose': 0.5, 'y_pose': 1.5, 'z_pose': 0.01, 'yaw_angle': 270 },
-    'center_right_of_corridor': {'x_pose': 0.5, 'y_pose': -5, 'z_pose': 0.01, 'yaw_angle': 270 },
+    'center_right_of_corridor': {'x_pose': 0.5, 'y_pose': -5.0, 'z_pose': 0.01, 'yaw_angle': 270 },
 }
 
 lift_stages = {'load': 2, 'unload': -2, 'half_load': 1, 'half_unload': -1, 'unchanged': 0}
