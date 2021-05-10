@@ -17,20 +17,20 @@ from nav_msgs.msg import Odometry
 from nav2_msgs.action import Wait
 
 """
-We spent a signficant ammount of time attempting to extend the followTargetActionClient
+We spent a significant amount of time attempting to extend the FollowTargetActionClient
 to include additional actions, conditions and goals, all unsuccessfully. Ultimately,
-we realize that we would need to a write an action server, in order to use any
-of the additional topics or actions we want to use like Odometry, cmd_vel, Wait, Spin
+we realize that we would need to a write an action server in order to use any
+of the additional topics or actions we intended like Odometry, cmd_vel, Wait, Spin
 etc.
 
-Ultimately, given our inability to determine how to add additional actions and goals
-due to the difficulty of locating the source code, and the significant lack of documentation,
+Ultimately, given our inability add additional actions and goals due to the difficulty 
+in locating the source code, and the significant lack of documentation,
 we made numerous modifications to the parameters used in the baseline planning function.
 
 NOTE: We have renamed the pallets, and the storage locations to correspond to
   increasing indices as we move from left to right (from +Y to -Y).
-  The original pallets were named such that pallet 1 was in the middle, and
-  pallet 4 was on the edge, and so on.
+  The original pallets were named in a way such that pallet 1 was in the middle,
+  and pallet 4 was on the edge, and so on.
 """
 
 
@@ -48,9 +48,9 @@ NOTE: We have renamed the pallets, and the storage locations to correspond to
 # We adjusted the locations of the pallets to represent the actual
 #   centerpoint of each pallet. We determined these from the pose values in Gazebo.
 #   additionally, since we were unable to intersperse different action types in the
-#   FollowTargetActionClient node, we could not tell the robot to move to a location,
-#   and then perform a spin function. We obsesrved that the robots performed poorly
-#   when they carried the pallets such that the long edge of the pallet was parallel
+#   FollowTargetActionClient node, we could not for example tell the robot to move 
+#   to a location, and then perform a spin function. We observed that the robots performed
+#   poorly when they carried the pallets such that the long edge of the pallet was parallel
 #   to the robot's direction of motion (see: paper), so we modified the
 #   get_pose_stamped function to include a CCW orientation relative to the
 #   positive X direction, which is directly upwards.
@@ -59,12 +59,12 @@ pallets_actual = {
     'pallet_1':         {'x_pose': 3.778, 'y_pose':  0.579, 'z_pose': 0.01, 'yaw_angle': 90},
     'pallet_2':         {'x_pose': 3.778, 'y_pose': -1.243, 'z_pose': 0.01, 'yaw_angle': 90},
     'pallet_3':         {'x_pose': 3.778, 'y_pose': -3.039, 'z_pose': 0.01, 'yaw_angle': 90},
-    'pallet_4':         {'x_pose': 3.778, 'y_pose': -4.827, 'z_pose': 0.01, 'yaw_angle': 85}, # this pallet is angled
+    'pallet_4':         {'x_pose': 3.778, 'y_pose': -4.827, 'z_pose': 0.01, 'yaw_angle': 85}, # this pallet is angled 
     'pallet_5':         {'x_pose': 3.778, 'y_pose': -6.751, 'z_pose': 0.01, 'yaw_angle': 90},
     'pallet_6':         {'x_pose': 3.778, 'y_pose': -8.665, 'z_pose': 0.01, 'yaw_angle': 90}
 }
 
-# Code to optionally add an offest if you want to the robot
+# Code to optionally add an offset if you want to the robot
 #   to not pick up the pallet from directly in the center.
 #   Currently this is unused.
 pallets = pallets_actual
@@ -81,8 +81,8 @@ for idx in pallets:
         pallets[idx]['x_pose'] += pallets_x_offset
 
 # We define 3 versions of each storage location we use, starting at the back
-#   of the location and moving successively outward, so that we are not directing
-#   the robot to a location with a pallet already in that location.
+#   of the location and moving successively outward. We use these so that we are not directing
+#   the robot to the same position that it previously placed a pallet in. 
 storage_locations =  {
     'storage_location_1':   {'x_pose': -5.24, 'y_pose':  5.56, 'z_pose': 0.01, 'yaw_angle': 180},
     'storage_location_2':   {'x_pose': -6.50, 'y_pose':  1.12, 'z_pose': 0.01, 'yaw_angle': 180},
@@ -100,7 +100,7 @@ free_area =  {
     'left_end_of_corridor':   {'x_pose': 0.92, 'y_pose':  6.45, 'z_pose': 0.01, 'yaw_angle': 270 },
 }
 
-# We have definied a number of waypoints we use to direct the robots, so that they do not collide with objects,
+# We have defined a number of waypoints we use to direct the robots, so that they do not collide with objects,
 #   which they would otherwise do when carrying pallets.
 waypoints = {
     'right_end_of_corridor':            {'x_pose':  1.35,  'y_pose': -6.78, 'z_pose': 0.01, 'yaw_angle': 270 },
@@ -130,7 +130,7 @@ quaternion_from_ccw_angle = {'0' : [0.000, 0.000,  0.000,  1.000],
                             '265': [0.000, 0.000,  0.737, -0.676],
                             '270': [0.000, 0.000, -0.707,  0.707],
                             '315': [0.000, 0.000, -0.383,  0.924]
-                             }
+}
 
 def get_pose_stamped(x_pose, y_pose, z_pose, yaw_angle):
     pose_stamped = PoseStamped()
@@ -153,7 +153,7 @@ class WarehouseController:
 
     # TODO: Use this function to create your plan
     def create_plan(self):
-        # wen continue using an modying the create_test_plan function
+        # We continue using and modifying the create_test_plan function
         pass
 
     def create_test_plan(self):
@@ -165,21 +165,21 @@ class WarehouseController:
         We observe that when robots 'load/unload' pallets, the force they apply often
         knocks the pallet somewhat, displacing it. To diminish this effect,
         we have the robot call 'half_load/half_unload' before calling 'load/unload.'
-        This is why the pallet we direct the robot to pick up is listed as a location twice.
+        This is why the pallet we direct the robot to pick up is listed as a pose twice.
 
         Additionally, as we show in the paper, if the robot's are not directed
         to pick up the pallets in order: 1,2,3,4,5,6, and move the pallets leftward
         through the gaps in the middle of the pallets on the robot's map, they
-        almost invariable collide with other pallets or the wall, which leads to
-        delocalization, and the crash of the navigation system.
+        almost invariable collide with other pallets or with the wall, which leads to
+        de-localization, and the crash of the navigation system.
 
         Therefore, we instruct the robots to pick up the pallets, carry them leftwards
-        past the first pallet, carry them down and arround the first pallet,
-        carry them to the center of the open area (as they hit their pallets on
-        the boxes if we do not), and ultimately to their storage locations.
+        past the first pallet on the map, carry them down and around the first pallet
+        on the map, carry them to the center of the open area (as they hit their pallets on
+        the boxes on either side if we do not), and ultimately to their storage locations.
 
         We then order the robots to proceed to the right of the main corridor,
-        and then to the right of pallet six, where they will move leftwards to
+        and then to the right of pallet six on the map, where they will move leftwards to
         the next pallet they are supposed to pick up. This has the robots moving
         in large circular motions, decreasing the chance the two robots collide.
         """
